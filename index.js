@@ -102,7 +102,6 @@ const server = http.createServer((req, res) => {
       }
       
       }
-    
       
     } else if (req.method === "DELETE") {
       const id = req.url.split('/')[2];
@@ -114,7 +113,7 @@ const server = http.createServer((req, res) => {
         // res.writeHead(200, {
         //   'Content-Type': 'application/json' 
         // })   
-
+        const person = idSearch(id, db);
         if(person[0] === 404){
           res.writeHead(404)
           res.write('Error:cannot find person whis such ID')
@@ -133,7 +132,6 @@ const server = http.createServer((req, res) => {
 server.listen(5000, () => {
   console.log('Server is running...')
 })
-
 
 
 function uidValidator(uid){
