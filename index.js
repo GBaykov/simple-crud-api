@@ -15,9 +15,7 @@ const server = http.createServer((req, res) => {
     } 
     else if (req.method === 'POST') {
       const body = [];
-      res.writeHead(201, {
-        'Content-Type': 'application/json' //; charset=utf-8
-      })
+
 
       req.on('data', data => {
         body.push(Buffer.from(data))
@@ -63,11 +61,8 @@ const server = http.createServer((req, res) => {
         }
       }
       
-    } 
-    // else if (req.method === 'PUT') {
-
-    // } 
-    else if (req.method === "DELETE") {
+    } else if (req.method === 'PUT') {
+      const body = [];
       const id = req.url.split('/')[2];
       if(uidValidator(id) === false){
         res.writeHead(400)
@@ -77,7 +72,49 @@ const server = http.createServer((req, res) => {
         // res.writeHead(200, {
         //   'Content-Type': 'application/json' 
         // })   
-        const person = idSearch(id, db);
+
+         const person = idSearch(id, db);
+         if(person[0] === 404){
+          res.writeHead(404)
+          res.write('Error:cannot find person whis such ID')
+          res.end()
+        } else { 
+        req.on('data', data => {
+          body.push(Buffer.from(data))
+        })
+  
+        req.on('end', () => {
+          const newPerson = JSON.parse(body.toString())
+          
+          if(!newPerson.name || !newPerson.age || !newPerson.hobbies) {
+            res.writeHead(404)
+            res.write('Error: incorrect properties. Person mast have age, name, hobbies')
+            res.end()
+          } else {
+            newPerson.id = id;
+            const index = db.findIndex(obj => obj == person[1])
+            db.splice(index, 1, newPerson);
+            res.writeHead(200)
+            res.end(JSON.stringify(newPerson))
+         }
+        
+        })
+      }
+      
+      }
+    
+      
+    } else if (req.method === "DELETE") {
+      const id = req.url.split('/')[2];
+      if(uidValidator(id) === false){
+        res.writeHead(400)
+        res.write('Error:your ID is not UUID')
+        res.end()
+      } else{
+        // res.writeHead(200, {
+        //   'Content-Type': 'application/json' 
+        // })   
+
         if(person[0] === 404){
           res.writeHead(404)
           res.write('Error:cannot find person whis such ID')
@@ -121,4 +158,4 @@ return [200, ob]
   } else {
     return [404]
   }
-}
+} 
