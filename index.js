@@ -1,4 +1,5 @@
-const http = require('http')
+const http = require('http');
+const { v4: uid } = require('uuid');
 
 let db = [
   {
@@ -34,8 +35,9 @@ const server = http.createServer((req, res) => {
           res.writeHead(404)
           res.end('Error:incorrect properties')
         } else {
+          newPerson.id = uid()
           db.push(newPerson)
-          res.end(body.toString())
+          res.end(JSON.stringify(newPerson))
         }
       })
     } 
