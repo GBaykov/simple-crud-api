@@ -2,13 +2,7 @@ const http = require('http');
 const url = require('url');
 const { v4: uid } = require('uuid');
 
-let db = [
-  {
-    name:"Gleb",
-    age:22,
-    hobbies: 'js'
-  }
-]
+let db = [];
 
 const server = http.createServer((req, res) => {
 
@@ -18,9 +12,9 @@ const server = http.createServer((req, res) => {
         'Content-Type': 'application/json' 
         })   
       res.end(JSON.stringify(db))
-
-    } else if (req.method === 'POST') {
-      const body = []
+    } 
+    else if (req.method === 'POST') {
+      const body = [];
       res.writeHead(201, {
         'Content-Type': 'application/json' //; charset=utf-8
       })
@@ -28,12 +22,13 @@ const server = http.createServer((req, res) => {
       req.on('data', data => {
         body.push(Buffer.from(data))
       })
+
       req.on('end', () => {
         const newPerson = JSON.parse(body.toString())
         
         if(!newPerson.name || !newPerson.age || !newPerson.hobbies) {
           res.writeHead(404)
-          res.write('Error:incorrect properties')
+          res.write('Error: incorrect properties. Person mast have age, name, hobbies')
           res.end()
         } else {
           newPerson.id = uid()
@@ -42,22 +37,34 @@ const server = http.createServer((req, res) => {
         }
       })
     }
-  }else{
-    const id = req.url.split('/')[2];
+  } else {
+    //сдулать проверку на URL
+ 
+
     if (req.method === 'GET') {
-      res.writeHead(200, {
-        'Content-Type': 'application/json' 
-      })   
-      const person = idSearch(id, db);
-      if(person[0] === 404){
-        res.writeHead(404)
-        res.write('Error:cannot find person whis such ID')
+      const id = req.url.split('/')[2];
+      //const uidVal = uidValidator(id);
+      if(uidValidator(id) === false){
+        res.writeHead(400)
+        res.write('Error:your ID is not UUID')
         res.end()
-      } else {
-        res.writeHead(200)
-        res.end(JSON.stringify(person[1]))
+      } else{
+        res.writeHead(200, {
+          'Content-Type': 'application/json' 
+        })   
+        const person = idSearch(id, db);
+        if(person[0] === 404){
+          res.writeHead(404)
+          res.write('Error:cannot find person whis such ID')
+          res.end()
+        } else {
+          res.writeHead(200)
+          res.end(JSON.stringify(person[1]))
+        }
       }
+      
     }
+    // if(req.method === 'PUT')
   }
 })
 
@@ -65,6 +72,16 @@ server.listen(5000, () => {
   console.log('Server is running...')
 })
 
+
+
+function uidValidator(uid){
+if(uid.split('-').length !== 5) {
+  return false;
+}
+  const regexp = /^[0-9a-f]{8}-?[0-9a-f]{4}-?[1-5][0-9a-f]{3}-?[89ab][0-9a-f]{3}-?[0-9a-f]{12}$/i
+  if(regexp.test(uid) === false) return false;
+  else return true;
+}
 
 function idSearch(id, arr){
   let ob;
