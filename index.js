@@ -49,9 +49,9 @@ const server = http.createServer((req, res) => {
         res.write('Error:your ID is not UUID')
         res.end()
       } else{
-        res.writeHead(200, {
-          'Content-Type': 'application/json' 
-        })   
+        // res.writeHead(200, {
+        //   'Content-Type': 'application/json' 
+        // })   
         const person = idSearch(id, db);
         if(person[0] === 404){
           res.writeHead(404)
@@ -63,8 +63,33 @@ const server = http.createServer((req, res) => {
         }
       }
       
+    } 
+    // else if (req.method === 'PUT') {
+
+    // } 
+    else if (req.method === "DELETE") {
+      const id = req.url.split('/')[2];
+      if(uidValidator(id) === false){
+        res.writeHead(400)
+        res.write('Error:your ID is not UUID')
+        res.end()
+      } else{
+        // res.writeHead(200, {
+        //   'Content-Type': 'application/json' 
+        // })   
+        const person = idSearch(id, db);
+        if(person[0] === 404){
+          res.writeHead(404)
+          res.write('Error:cannot find person whis such ID')
+          res.end()
+        } else {
+          const index = db.findIndex(obj => obj == person[1])
+          db.splice(index, 1);
+          res.writeHead(204)
+          res.end()
+        }
+      }
     }
-    // if(req.method === 'PUT')
   }
 })
 
