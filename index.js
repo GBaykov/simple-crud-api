@@ -47,7 +47,7 @@ const server = http.createServer((req, res) => {
       res.end()
     }
 
-  } else {
+  } else if(req.url.split('/').length == 3 && req.url.split('/')[1]=='person') {
     //сдулать проверку на URL
  
 
@@ -138,13 +138,21 @@ const server = http.createServer((req, res) => {
         }
       }
     }
+  } else if(req.url == '/' ){
+res.writeHead(200)
+res.write('Server is running')
+res.end()
+  } else {
+    res.writeHead(404)
+res.write('Error: request on non-existing resourse')
+res.end()
   }
 })
 
 server.listen(5000, () => {
   console.log('Server is running...')
 })
-
+ 
 
 function uidValidator(uid){
 if(uid.split('-').length !== 5) {
