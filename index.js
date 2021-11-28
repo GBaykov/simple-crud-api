@@ -1,4 +1,5 @@
 const http = require('http');
+const PORT = process.env.PORT || 3000
 const url = require('url');
 const { v4: uid } = require('uuid');
 
@@ -7,7 +8,6 @@ let db = [];
 const server = http.createServer((req, res) => {
 
   if(req.url === '/person' || req.url === '/person/'){
-
     try{
 
       if (req.method === 'GET') {
@@ -149,8 +149,8 @@ res.end()
   }
 })
 
-server.listen(5000, () => {
-  console.log('Server is running...')
+server.listen(PORT, () => {
+  console.log(`Server is running...`)
 })
  
 
