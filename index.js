@@ -7,34 +7,46 @@ let db = [];
 const server = http.createServer((req, res) => {
 
   if(req.url === '/person' || req.url === '/person/'){
-    if (req.method === 'GET') {
-       res.writeHead(200, {
-        'Content-Type': 'application/json' 
-        })   
-      res.end(JSON.stringify(db))
-    } 
-    else if (req.method === 'POST') {
-      const body = [];
 
+    try{
 
-      req.on('data', data => {
-        body.push(Buffer.from(data))
-      })
-
-      req.on('end', () => {
-        const newPerson = JSON.parse(body.toString())
-        
-        if(!newPerson.name || !newPerson.age || !newPerson.hobbies) {
-          res.writeHead(404)
-          res.write('Error: incorrect properties. Person mast have age, name, hobbies')
-          res.end()
-        } else {
-          newPerson.id = uid()
-          db.push(newPerson)
-          res.end(JSON.stringify(newPerson))
-        }
-      })
+      if (req.method === 'GET') {
+        res.writeHead(200, {
+         'Content-Type': 'application/json' 
+         })   
+       res.end(JSON.stringify(db))
+     } 
+     else if (req.method === 'POST') {
+       const body = [];
+ 
+ 
+       req.on('data', data => {
+         body.push(Buffer.from(data))
+       })
+ 
+       req.on('end', () => {
+         const newPerson = JSON.parse(body.toString())
+         
+         if(!newPerson.name || !newPerson.age || !newPerson.hobbies) {
+           res.writeHead(404)
+           res.write('Error: incorrect properties. Person mast have age, name, hobbies')
+           res.end()
+         } else {
+           newPerson.id = uid()
+           db.push(newPerson)
+           res.end(JSON.stringify(newPerson))
+         }
+       })
+     } else {
+       throw new Error('no such method on "/person" request')
+     }
+    }catch(err){
+      res.writeHead(500)
+      const textErr = err.text || 'Error: While "/person" request smt wrong.';
+      res.write(textErr)
+      res.end()
     }
+
   } else {
     //сдулать проверку на URL
  
