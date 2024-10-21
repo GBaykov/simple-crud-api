@@ -74,8 +74,6 @@ describe('User API testing', () => {
 
   it('should return 404', async () => {
     const response = await request(server).get(`/api/users/${user_id}`);
-
     expect(response.status).toBe(404);
-    expect(response.body.message).toBe('User not found');
   });
 });

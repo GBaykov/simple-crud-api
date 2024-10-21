@@ -78,12 +78,10 @@ export const serverStarter = (req: IncomingMessage, res: ServerResponse) => {
       }
       const user = DB.find((item) => item.id === id);
 
-      // const body: Array<Buffer> = [];
       let body = '';
 
       req.on('data', (data) => {
         body += data;
-        // body.push(Buffer.from(data))
       });
 
       req.on('end', () => {
